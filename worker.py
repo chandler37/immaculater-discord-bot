@@ -3,10 +3,56 @@ import aiohttp
 import json
 import os
 
+from discord.ext import commands
 import discord
 
 
-client = discord.Client()
+def _immaculater_url():
+    return 'https://%s' % os.environ["IMMACULATER_URL"]
+
+
+description = f"""A Discord bot for {_immaculater_url()}
+
+Immaculater source code: https://github.com/chandler37/immaculater
+
+This bot's source code: https://github.com/chandler37/immaculater-discord-bot
+
+'!help' shows this message but you really want '!! help' to see help for
+Immaculater's command-line interface.
+
+!! help
+!! do find a cool job
+!! cd /inbox && complete 'find a cool job'
+!! rmact uid=37
+!! view all_even_deleted && ls -R /
+"""
+
+
+class RoboImmaculater(commands.Bot):
+    def __init__(self):
+        super().__init__(commands.when_mentioned_or(os.environ.get("DISCORD_COMMAND_PREFIX", "!")),
+                         description=description, pm_help=None)
+
+bot = RoboImmaculater()
+
+@bot.command()
+async def echo(*args):
+    await bot.say(f'You passed in {args}')
+
+
+@bot.command(name="!", pass_context=True)
+async def sh(ctx, *args):
+    tmp = await bot.say(
+        'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
+    await bot.edit_message(
+        tmp,
+        await _immaculater_response(user_uid=ctx.message.author.id,
+                                    commands=' '.join(args)))
+
+
+@bot.command()
+async def open():
+    await bot.say(f'{_immaculater_url()}/todo')
 
 
 async def _immaculater_response(user_uid=None, commands=None):
@@ -14,7 +60,7 @@ async def _immaculater_response(user_uid=None, commands=None):
     result = []
     list_of_commands = commands.strip().split('&&') if commands.strip() else ["help"]
     headers = {'Content-type': 'application/json'}
-    auth = aiohttp.helpers.BasicAuth(login=str(client.user.id),
+    auth = aiohttp.helpers.BasicAuth(login=str(bot.user.id),
                                      password=os.environ["IMMACULATER_BOT_SECRET"])
     async with aiohttp.ClientSession(auth=auth, headers=headers) as session:
         async with session.post(_immaculater_url() + "/todo/discordapi",
@@ -52,68 +98,4 @@ def _immaculater_name():
     return os.environ.get("IMMACULATER_DISPLAY_NAME", _immaculater_url())
 
 
-def _immaculater_url():
-    return 'https://%s' % os.environ["IMMACULATER_URL"]
-
-
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
-
-
-def _usage_message():
-    return '\n'.join(
-        [
-            "Hello, I am %s, a bot for %s." % (client.user.name, _immaculater_name()),
-            "Usage:",
-            "",
-            "!i help",
-            "!i do buy soymilk",
-            "!i cd /inbox && complete 'buy soymilk'",
-            "!i view all_even_deleted && ls -R /",
-            ])
-
-
-@client.event
-async def on_message(message):
-    if message.author.id == client.user.id or message.author.bot:
-        return
-    if message.content.startswith('!test'):
-        counter = 0
-        tmp = await client.send_message(message.channel, 'Calculating messages...')
-        async for log in client.logs_from(message.channel, limit=100):
-            if log.author == message.author:
-                counter += 1
-        await client.edit_message(tmp, 'You have {} messages.'.format(counter))
-    elif message.content.startswith('!sleep'):
-        await asyncio.sleep(5)
-        await client.send_message(message.channel, 'Done sleeping')
-    elif message.content.startswith('!who'):
-        await client.send_message(
-            message.channel,
-            'You are %s#%s with ID %s' %
-            (message.author.name, message.author.discriminator, message.author.id))
-    # TODO(chandler37): An 'open' command that launches immaculater in a web
-    # browser.
-    #
-    # TODO(chandler37): Help on these commands
-    #
-    # TODO(chandler37): What do we do if no !command is given?
-    elif message.content.startswith('!i '):
-        tmp = await client.send_message(
-            message.channel,
-            'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
-        await client.edit_message(
-            tmp,
-            await _immaculater_response(user_uid=message.author.id,
-                                        commands=message.content[len('!i '):]))
-    elif message.content.startswith('!help'):
-        await client.send_message(
-            message.channel,
-            _usage_message())
-
-
-client.run(os.environ["DISCORD_TOKEN"])
+bot.run(os.environ["DISCORD_TOKEN"])
