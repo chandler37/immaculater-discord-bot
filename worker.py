@@ -38,11 +38,13 @@ bot = RoboImmaculater()
 @bot.command(name="!", pass_context=True)
 async def sh(ctx, *args):
     tmp = await bot.say(
-        'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
+        'Waking %s from sleep... wishing we used Heroku hobby dynos...'
+        % _immaculater_name())
+    iresponse = await _immaculater_response(user_uid=ctx.message.author.id,
+                                            commands=' '.join(args))
     await bot.edit_message(
         tmp,
-        await _immaculater_response(user_uid=ctx.message.author.id,
-                                    commands=' '.join(args)))
+        f'```\n{iresponse}```')
 
 
 @bot.command()
