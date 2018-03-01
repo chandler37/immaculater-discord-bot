@@ -79,7 +79,7 @@ def _usage_message():
 
 @client.event
 async def on_message(message):
-    if message.author.id == client.user.id:
+    if message.author.id == client.user.id or message.author.bot:
         return
     if message.content.startswith('!test'):
         counter = 0
@@ -110,7 +110,7 @@ async def on_message(message):
             tmp,
             await _immaculater_response(user_uid=message.author.id,
                                         commands=message.content[len('!i '):]))
-    elif len(message.content):
+    elif message.content.startswith('!help'):
         await client.send_message(
             message.channel,
             _usage_message())
