@@ -11,19 +11,19 @@ description = """A Discord bot for https://github.com/chandler37/immaculater"""
 
 class RoboImmaculater(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=os.environ.get("DISCORD_COMMAND_PREFIX", "!!"),
+        super().__init__(commands.when_mentioned_or(os.environ.get("DISCORD_COMMAND_PREFIX", "!!")),
                          description=description, pm_help=None)
 
 bot = RoboImmaculater()
 
 @bot.command()
-async def echo(ctx, *args):
-    await ctx.send(f'You passed in {args}')
+async def echo(*args):
+    await bot.say(f'You passed in {args}')
 
 
 @bot.command()
-async def speak(ctx):
-    await ctx.send('I speak')
+async def speak():
+    await bot.say('I speak')
 
 
 async def _immaculater_response(user_uid=None, commands=None):
