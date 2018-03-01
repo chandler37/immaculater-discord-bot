@@ -6,6 +6,11 @@ import os
 from discord.ext import commands
 import discord
 
+
+def _immaculater_url():
+    return 'https://%s' % os.environ["IMMACULATER_URL"]
+
+
 description = f"""A Discord bot for {_immaculater_url()}
 
 Immaculater source code: https://github.com/chandler37/immaculater
@@ -43,7 +48,7 @@ async def sh(*args):
     await client.edit_message(
         tmp,
         await _immaculater_response(user_uid=message.author.id,
-                                    commands=' '.join(args))
+                                    commands=' '.join(args)))
 
 
 @bot.command()
@@ -92,10 +97,6 @@ async def _immaculater_response(user_uid=None, commands=None):
 
 def _immaculater_name():
     return os.environ.get("IMMACULATER_DISPLAY_NAME", _immaculater_url())
-
-
-def _immaculater_url():
-    return 'https://%s' % os.environ["IMMACULATER_URL"]
 
 
 bot.run(os.environ["DISCORD_TOKEN"])
