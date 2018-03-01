@@ -40,13 +40,13 @@ async def echo(*args):
     await bot.say(f'You passed in {args}')
 
 
-@bot.command(name="!")
+@bot.command(name="!", pass_context=True)
 async def sh(ctx, *args):
     tmp = await bot.say(
         'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
     await bot.edit_message(
         tmp,
-        await _immaculater_response(user_uid=message.author.id,
+        await _immaculater_response(user_uid=ctx.message.author.id,
                                     commands=' '.join(args)))
 
 
