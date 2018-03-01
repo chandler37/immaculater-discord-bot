@@ -11,7 +11,7 @@ description = """A Discord bot for https://github.com/chandler37/immaculater"""
 
 class RoboImmaculater(commands.Bot):
     def __init__(self):
-        super().__init__(commands.when_mentioned_or(os.environ.get("DISCORD_COMMAND_PREFIX", "!!")),
+        super().__init__(commands.when_mentioned_or(os.environ.get("DISCORD_COMMAND_PREFIX", "!")),
                          description=description, pm_help=None)
 
 bot = RoboImmaculater()
@@ -19,6 +19,11 @@ bot = RoboImmaculater()
 @bot.command()
 async def echo(*args):
     await bot.say(f'You passed in {args}')
+
+
+@bot.command(name="!")
+async def sh(*args):
+    await bot.say(f'sh: You passed in {args}. Also, why is when_mentioned_or failing? {bot.user.mention} is the mention')
 
 
 @bot.command()
