@@ -78,6 +78,8 @@ def _usage_message():
 
 @client.event
 async def on_message(message):
+    if message.author.id == client.user.id:
+        return
     if message.content.startswith('!test'):
         counter = 0
         tmp = await client.send_message(message.channel, 'Calculating messages...')
@@ -107,12 +109,10 @@ async def on_message(message):
             tmp,
             await _immaculater_response(user_uid=message.author.id,
                                         commands=message.content[len('!i '):]))
-    elif message.content.startswith('!help'):
+    elif len(message.content):
         await client.send_message(
             message.channel,
             _usage_message())
-    elif len(message.content):
-        print('DLC message.content=%s' % message.content)
 
 
 client.run(os.environ["DISCORD_TOKEN"])
