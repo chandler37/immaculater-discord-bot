@@ -21,6 +21,11 @@ async def echo(ctx, *args):
     await ctx.send(f'You passed in {args}')
 
 
+@bot.command()
+async def speak(ctx):
+    await ctx.send('I speak')
+
+
 async def _immaculater_response(user_uid=None, commands=None):
     assert _immaculater_url().startswith('https://')  # let's keep our secrets
     result = []
