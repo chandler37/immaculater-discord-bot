@@ -19,7 +19,7 @@ def _immaculater_response(user_uid=None, commands=None):
                             'discord_user': user_uid,
                             'read_only': False},
                       headers=headers,
-                      auth=(os.environ["IMMACULATER_BOT_SECRET"], "one secret is enough"))
+                      auth=(str(client.user.id), os.environ["IMMACULATER_BOT_SECRET"]))
     if r.status_code == 200:
       for x in r.json()['printed']:
         append_result(x)
