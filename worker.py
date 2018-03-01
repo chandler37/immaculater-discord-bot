@@ -11,11 +11,14 @@ description = """A Discord bot for https://github.com/chandler37/immaculater"""
 
 class RoboImmaculater(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='?', description=description, pm_help=None)
+        super().__init__(command_prefix=os.environ.get("DISCORD_COMMAND_PREFIX", "!!"),
+                         description=description, pm_help=None)
 
-    @commands.command()
-    async def echo(ctx, *args):
-        await ctx.send(f'You passed in {args}')
+bot = RoboImmaculater()
+
+@bot.command()
+async def echo(ctx, *args):
+    await ctx.send(f'You passed in {args}')
 
 
 async def _immaculater_response(user_uid=None, commands=None):
@@ -64,8 +67,6 @@ def _immaculater_name():
 def _immaculater_url():
     return 'https://%s' % os.environ["IMMACULATER_URL"]
 
-
-RoboImmaculater().run(os.environ["DISCORD_TOKEN"])
 
 r"""
 @client.event
@@ -128,3 +129,6 @@ async def on_message(message):
 
 client.run(os.environ["DISCORD_TOKEN"])
 """
+
+
+bot.run(os.environ["DISCORD_TOKEN"])
