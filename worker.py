@@ -107,7 +107,7 @@ async def on_message(message):
             tmp,
             await _immaculater_response(user_uid=message.author.id,
                                         commands=message.content[len('!i '):]))
-    else:
+    elif len(message.content):
         await client.send_message(
             message.channel,
             _usage_message())
