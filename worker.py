@@ -33,11 +33,12 @@ def _immaculater_response(user_uid=None, commands=None):
                 append_result(unicode(r.json()))
         except ValueError:
             if r.status_code == 403:
-                append_result(
-                  'Permission denied -- you must first log into %s via Discord'
-                  % _immaculater_url())
-                append_result("DLC what about this?")
-                append_result(r.text)
+                if 'FirstLoginRequired' in r.text:
+                    append_result(
+                        'Permission denied -- you must first log into %s via Discord'
+                        % _immaculater_url())
+                else:
+                    append_result('Permission denied')
             else:
                 append_result('ERROR: Status code %s' % r.status_code)
                 append_result(r.text)
@@ -77,6 +78,12 @@ async def on_message(message):
             message.channel,
             'You are %s#%s with ID %s' %
             (message.author.name, message.author.discriminator, message.author.id))
+    # TODO(chandler37): An 'open' command that launches immaculater in a web
+    # browser.
+    #
+    # TODO(chandler37): Help on these commands
+    #
+    # TODO(chandler37): What do we do if no !command is given?
     elif message.content.startswith('!i '):
         tmp = await client.send_message(
             message.channel,
