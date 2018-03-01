@@ -41,11 +41,10 @@ async def echo(*args):
 
 
 @bot.command(name="!")
-async def sh(*args):
-    tmp = await client.send_message(
-        message.channel,
+async def sh(ctx, *args):
+    tmp = await bot.say(
         'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
-    await client.edit_message(
+    await bot.edit_message(
         tmp,
         await _immaculater_response(user_uid=message.author.id,
                                     commands=' '.join(args)))
