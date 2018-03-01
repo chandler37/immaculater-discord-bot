@@ -22,18 +22,25 @@ def _immaculater_response(user_uid=None, commands=None):
                       headers=headers,
                       auth=(str(client.user.id), os.environ["IMMACULATER_BOT_SECRET"]))
     if r.status_code == 200:
-      for x in r.json()['printed']:
-        append_result(x)
+        for x in r.json()['printed']:
+            append_result(x)
     else:
-      try:
-        j = r.json()
-        if isinstance(j, dict) and 'immaculater_error' in j:
-          append_result(j['immaculater_error'])
-        else:
-          append_result(unicode(r.json()))
-      except ValueError:
-        append_result('ERROR: Status code %s' % r.status_code)
-        append_result(r.text)
+        try:
+            j = r.json()
+            if isinstance(j, dict) and 'immaculater_error' in j:
+                append_result(j['immaculater_error'])
+            else:
+                append_result(unicode(r.json()))
+        except ValueError:
+            if r.status_code == 403:
+                append_result(
+                  'Permission denied -- you must first log into %s via Discord'
+                  % _immaculater_url())
+                append_result("DLC what about this?")
+                append_result(r.text)
+            else:
+                append_result('ERROR: Status code %s' % r.status_code)
+                append_result(r.text)
     return '\n'.join(result)
 
 
