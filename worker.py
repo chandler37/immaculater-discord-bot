@@ -73,7 +73,6 @@ async def on_message(message):
         tmp = await client.send_message(
             message.channel,
             'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
-        request
         await client.edit_message(
             tmp,
             _immaculater_response(user_uid=message.author.id,
