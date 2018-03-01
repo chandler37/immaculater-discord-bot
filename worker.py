@@ -6,7 +6,21 @@ import os
 from discord.ext import commands
 import discord
 
-description = """A Discord bot for https://github.com/chandler37/immaculater"""
+description = f"""A Discord bot for {_immaculater_url()}
+
+Immaculater source code: https://github.com/chandler37/immaculater
+
+This bot's source code: https://github.com/chandler37/immaculater-discord-bot
+
+'!help' shows this message but you really want '!! help' to see help for
+Immaculater's command-line interface.
+
+!! help
+!! do find a cool job
+!! cd /inbox && complete 'find a cool job'
+!! rmact uid=37
+!! view all_even_deleted && ls -R /
+"""
 
 
 class RoboImmaculater(commands.Bot):
@@ -23,12 +37,18 @@ async def echo(*args):
 
 @bot.command(name="!")
 async def sh(*args):
-    await bot.say(f'sh: You passed in {args}. Also, why is when_mentioned_or failing? {bot.user.mention} is the mention')
+    tmp = await client.send_message(
+        message.channel,
+        'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
+    await client.edit_message(
+        tmp,
+        await _immaculater_response(user_uid=message.author.id,
+                                    commands=' '.join(args))
 
 
 @bot.command()
-async def speak():
-    await bot.say('I speak')
+async def open():
+    await bot.say(f'{_immaculater_url()}/todo')
 
 
 async def _immaculater_response(user_uid=None, commands=None):
@@ -76,69 +96,6 @@ def _immaculater_name():
 
 def _immaculater_url():
     return 'https://%s' % os.environ["IMMACULATER_URL"]
-
-
-r"""
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
-
-
-def _usage_message():
-    return '\n'.join(
-        [
-            "Hello, I am %s, a bot for %s." % (client.user.name, _immaculater_name()),
-            "Usage:",
-            "",
-            "!i help",
-            "!i do buy soymilk",
-            "!i cd /inbox && complete 'buy soymilk'",
-            "!i view all_even_deleted && ls -R /",
-            ])
-
-
-@client.event
-async def on_message(message):
-    if message.author.id == client.user.id or message.author.bot:
-        return
-    if message.content.startswith('!test'):
-        counter = 0
-        tmp = await client.send_message(message.channel, 'Calculating messages...')
-        async for log in client.logs_from(message.channel, limit=100):
-            if log.author == message.author:
-                counter += 1
-        await client.edit_message(tmp, 'You have {} messages.'.format(counter))
-    elif message.content.startswith('!sleep'):
-        await asyncio.sleep(5)
-        await client.send_message(message.channel, 'Done sleeping')
-    elif message.content.startswith('!who'):
-        await client.send_message(
-            message.channel,
-            'You are %s#%s with ID %s' %
-            (message.author.name, message.author.discriminator, message.author.id))
-    # TODO(chandler37): An 'open' command that launches immaculater in a web
-    # browser.
-    #
-    # TODO(chandler37): Be more botlike: use proper commandsd and respond to @mentions
-    elif message.content.startswith('!i '):
-        tmp = await client.send_message(
-            message.channel,
-            'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
-        await client.edit_message(
-            tmp,
-            await _immaculater_response(user_uid=message.author.id,
-                                        commands=message.content[len('!i '):]))
-    elif message.content.startswith('!help'):
-        await client.send_message(
-            message.channel,
-            _usage_message())
-
-
-client.run(os.environ["DISCORD_TOKEN"])
-"""
 
 
 bot.run(os.environ["DISCORD_TOKEN"])
