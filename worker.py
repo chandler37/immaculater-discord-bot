@@ -35,11 +35,6 @@ class RoboImmaculater(commands.Bot):
 
 bot = RoboImmaculater()
 
-@bot.command()
-async def echo(*args):
-    await bot.say(f'You passed in {args}')
-
-
 @bot.command(name="!", pass_context=True)
 async def sh(ctx, *args):
     tmp = await bot.say(
