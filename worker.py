@@ -3,10 +3,19 @@ import aiohttp
 import json
 import os
 
+from discord.ext import commands
 import discord
 
+description = """A Discord bot for https://github.com/chandler37/immaculater"""
 
-client = discord.Client()
+
+class RoboImmaculater(commands.Bot):
+    def __init__(self):
+        super().__init__(command_prefix='?', description=description, pm_help=None)
+
+    @commands.command()
+    async def echo(ctx, *args):
+        await ctx.send(f'You passed in {args}')
 
 
 async def _immaculater_response(user_uid=None, commands=None):
@@ -56,6 +65,9 @@ def _immaculater_url():
     return 'https://%s' % os.environ["IMMACULATER_URL"]
 
 
+RoboImmaculater().run(os.environ["DISCORD_TOKEN"])
+
+r"""
 @client.event
 async def on_ready():
     print('Logged in as')
@@ -99,9 +111,7 @@ async def on_message(message):
     # TODO(chandler37): An 'open' command that launches immaculater in a web
     # browser.
     #
-    # TODO(chandler37): Help on these commands
-    #
-    # TODO(chandler37): What do we do if no !command is given?
+    # TODO(chandler37): Be more botlike: use proper commandsd and respond to @mentions
     elif message.content.startswith('!i '):
         tmp = await client.send_message(
             message.channel,
@@ -117,3 +127,4 @@ async def on_message(message):
 
 
 client.run(os.environ["DISCORD_TOKEN"])
+"""
