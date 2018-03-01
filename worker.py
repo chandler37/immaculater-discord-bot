@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+import json
 import os
 
 import discord
@@ -9,41 +10,40 @@ client = discord.Client()
 
 
 async def _immaculater_response(user_uid=None, commands=None):
-    result = []
-    def append_result(y):
-        result.append(y)
     assert _immaculater_url().startswith('https://')  # let's keep our secrets
+    result = []
     list_of_commands = commands.strip().split('&&') if commands.strip() else ["help"]
     headers = {'Content-type': 'application/json'}
     auth = aiohttp.helpers.BasicAuth(login=str(client.user.id),
                                      password=os.environ["IMMACULATER_BOT_SECRET"])
     async with aiohttp.ClientSession(auth=auth, headers=headers) as session:
         async with session.post(_immaculater_url() + "/todo/discordapi",
-                                json={'commands': list_of_commands,
-                                      'discord_user': user_uid,
-                                      'read_only': False}) as r:
+                                data=json.dumps({'commands': list_of_commands,
+                                                 'discord_user': user_uid,
+                                                 'read_only': False})) as r:
             if r.status == 200:
-                for x in r.json()['printed']:
-                    append_result(x)
+                j = await r.json()
+                for x in j['printed']:
+                    result.append(x)
             else:
                 try:
-                    j = r.json()
+                    j = await r.json()
                     if isinstance(j, dict) and 'immaculater_error' in j:
-                        append_result(j['immaculater_error'])
+                        result.append(j['immaculater_error'])
                     else:
-                        append_result(unicode(r.json()))
+                        result.append(unicode(j))
                 except ValueError:
                     text = await r.text()
                     if r.status == 403:
                         if 'FirstLoginRequired' in text:
-                            append_result(
+                            result.append(
                                 'Permission denied -- you must first log into %s via Discord'
                                 % _immaculater_url())
                         else:
-                            append_result('Permission denied')
+                            result.append('Permission denied')
                     else:
-                        append_result('ERROR: Status code %s' % r.status)
-                        append_result(text)
+                        result.append('ERROR: Status code %s' % r.status)
+                        result.append(text)
     result = '\n'.join(result)
     return result if result else '(okay)'
 
