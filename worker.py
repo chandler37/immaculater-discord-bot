@@ -73,6 +73,7 @@ def _usage_message():
             "!i help",
             "!i do buy soymilk",
             "!i cd /inbox && complete 'buy soymilk'",
+            "!i view all_even_deleted && ls -R /",
             ])
 
 
