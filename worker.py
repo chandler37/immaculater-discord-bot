@@ -107,10 +107,12 @@ async def on_message(message):
             tmp,
             await _immaculater_response(user_uid=message.author.id,
                                         commands=message.content[len('!i '):]))
-    elif len(message.content):
+    elif message.content.startswith('!help'):
         await client.send_message(
             message.channel,
             _usage_message())
+    elif len(message.content):
+        print('DLC message.content=%s' % message.content)
 
 
 client.run(os.environ["DISCORD_TOKEN"])
