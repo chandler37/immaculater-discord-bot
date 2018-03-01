@@ -42,7 +42,8 @@ def _immaculater_response(user_uid=None, commands=None):
             else:
                 append_result('ERROR: Status code %s' % r.status_code)
                 append_result(r.text)
-    return '\n'.join(result)
+    result = '\n'.join(result)
+    return result if result else '(okay)'
 
 
 def _immaculater_name():
