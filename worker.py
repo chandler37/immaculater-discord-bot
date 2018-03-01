@@ -15,7 +15,7 @@ def _immaculater_response(user_uid=None, commands=None):
     assert _immaculater_url().startswith('https://')  # let's keep our secrets
     list_of_commands = commands.strip().split('&&') if commands.strip() else ["help"]
     headers = {'Content-type': 'application/json'}
-    r = requests.post(_immaculater_url() + "/discordapi",
+    r = requests.post(_immaculater_url() + "/todo/discordapi",
                       json={'commands': list_of_commands,
                             'discord_user': user_uid,
                             'read_only': False},
