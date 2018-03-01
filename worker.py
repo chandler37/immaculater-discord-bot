@@ -45,7 +45,7 @@ async def _immaculater_response(user_uid=None, commands=None):
                         result.append('ERROR: Status code %s' % r.status)
                         result.append(text)
     result = '\n'.join(result)
-    return result if result else '(okay)'
+    return result if result else 'okay, remembered!'
 
 
 def _immaculater_name():
@@ -62,6 +62,18 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+
+
+def _usage_message():
+    return '\n'.join(
+        [
+            "Hello, I am %s, a bot for %s." % (client.user.name, _immaculater_name()),
+            "Usage:",
+            "",
+            "!i help",
+            "!i do buy soymilk",
+            "!i cd /inbox && complete 'buy soymilk'",
+            ])
 
 
 @client.event
@@ -95,6 +107,10 @@ async def on_message(message):
             tmp,
             await _immaculater_response(user_uid=message.author.id,
                                         commands=message.content[len('!i '):]))
+    else:
+        await client.send_message(
+            message.channel,
+            _usage_message())
 
 
 client.run(os.environ["DISCORD_TOKEN"])
