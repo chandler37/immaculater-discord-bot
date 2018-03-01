@@ -60,7 +60,7 @@ async def _immaculater_response(user_uid=None, commands=None):
     result = []
     list_of_commands = commands.strip().split('&&') if commands.strip() else ["help"]
     headers = {'Content-type': 'application/json'}
-    auth = aiohttp.helpers.BasicAuth(login=str(client.user.id),
+    auth = aiohttp.helpers.BasicAuth(login=str(bot.user.id),
                                      password=os.environ["IMMACULATER_BOT_SECRET"])
     async with aiohttp.ClientSession(auth=auth, headers=headers) as session:
         async with session.post(_immaculater_url() + "/todo/discordapi",
