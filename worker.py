@@ -1,49 +1,51 @@
 import asyncio
+import aiohttp
+import json
 import os
 
 import discord
-import requests
 
 
 client = discord.Client()
 
 
-def _immaculater_response(user_uid=None, commands=None):
-    result = []
-    def append_result(y):
-        result.append(y)
+async def _immaculater_response(user_uid=None, commands=None):
     assert _immaculater_url().startswith('https://')  # let's keep our secrets
+    result = []
     list_of_commands = commands.strip().split('&&') if commands.strip() else ["help"]
     headers = {'Content-type': 'application/json'}
-    r = requests.post(_immaculater_url() + "/todo/discordapi",
-                      json={'commands': list_of_commands,
-                            'discord_user': user_uid,
-                            'read_only': False},
-                      headers=headers,
-                      auth=(str(client.user.id), os.environ["IMMACULATER_BOT_SECRET"]))
-    if r.status_code == 200:
-        for x in r.json()['printed']:
-            append_result(x)
-    else:
-        try:
-            j = r.json()
-            if isinstance(j, dict) and 'immaculater_error' in j:
-                append_result(j['immaculater_error'])
+    auth = aiohttp.helpers.BasicAuth(login=str(client.user.id),
+                                     password=os.environ["IMMACULATER_BOT_SECRET"])
+    async with aiohttp.ClientSession(auth=auth, headers=headers) as session:
+        async with session.post(_immaculater_url() + "/todo/discordapi",
+                                data=json.dumps({'commands': list_of_commands,
+                                                 'discord_user': user_uid,
+                                                 'read_only': False})) as r:
+            if r.status == 200:
+                j = await r.json()
+                for x in j['printed']:
+                    result.append(x)
             else:
-                append_result(unicode(r.json()))
-        except ValueError:
-            if r.status_code == 403:
-                if 'FirstLoginRequired' in r.text:
-                    append_result(
-                        'Permission denied -- you must first log into %s via Discord'
-                        % _immaculater_url())
-                else:
-                    append_result('Permission denied')
-            else:
-                append_result('ERROR: Status code %s' % r.status_code)
-                append_result(r.text)
+                try:
+                    j = await r.json()
+                    if isinstance(j, dict) and 'immaculater_error' in j:
+                        result.append(j['immaculater_error'])
+                    else:
+                        result.append(unicode(j))
+                except ValueError:
+                    text = await r.text()
+                    if r.status == 403:
+                        if 'FirstLoginRequired' in text:
+                            result.append(
+                                'Permission denied -- you must first log into %s via Discord'
+                                % _immaculater_url())
+                        else:
+                            result.append('Permission denied')
+                    else:
+                        result.append('ERROR: Status code %s' % r.status)
+                        result.append(text)
     result = '\n'.join(result)
-    return result if result else '(okay)'
+    return result if result else 'okay, remembered!'
 
 
 def _immaculater_name():
@@ -62,8 +64,23 @@ async def on_ready():
     print('------')
 
 
+def _usage_message():
+    return '\n'.join(
+        [
+            "Hello, I am %s, a bot for %s." % (client.user.name, _immaculater_name()),
+            "Usage:",
+            "",
+            "!i help",
+            "!i do buy soymilk",
+            "!i cd /inbox && complete 'buy soymilk'",
+            "!i view all_even_deleted && ls -R /",
+            ])
+
+
 @client.event
 async def on_message(message):
+    if message.author.id == client.user.id or message.author.bot:
+        return
     if message.content.startswith('!test'):
         counter = 0
         tmp = await client.send_message(message.channel, 'Calculating messages...')
@@ -91,8 +108,12 @@ async def on_message(message):
             'Waking %s from sleep... wishing we used Heroku hobby dynos...' % _immaculater_name())
         await client.edit_message(
             tmp,
-            _immaculater_response(user_uid=message.author.id,
-                                  commands=message.content[len('!i '):]))
+            await _immaculater_response(user_uid=message.author.id,
+                                        commands=message.content[len('!i '):]))
+    elif message.content.startswith('!help'):
+        await client.send_message(
+            message.channel,
+            _usage_message())
 
 
 client.run(os.environ["DISCORD_TOKEN"])
