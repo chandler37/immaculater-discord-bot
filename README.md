@@ -9,3 +9,8 @@ Immaculater is https://github.com/chandler37/immaculater
 - heroku config:set DISCORD_TOKEN=<see https://discordapp.com/developers/applications/me>
 - git push heroku master
 - heroku scale worker=1
+- Add your bot to your server by replacing the bot's Client ID in the link below:
+
+https://discordapp.com/api/oauth2/authorize?client_id=ClientID&scope=bot&permissions=0
+
+Select your server in the drop-down.
