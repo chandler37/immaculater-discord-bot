@@ -42,6 +42,7 @@ async def sh(ctx, *args):
         % _immaculater_name())
     iresponse = await _immaculater_response(user_uid=ctx.message.author.id,
                                             commands=' '.join(args))
+    iresponse = iresponse.replace("```", "\\\\\\")
     await bot.edit_message(
         tmp,
         f'```\n{iresponse}```')
