@@ -58,7 +58,8 @@ async def open():
 @bot.command(pass_context=True)
 async def perms(ctx):
     msg = await bot.say(f'{_immaculater_url()}/todo')
-    await bot.say(f'{msg.channel.permissions_for(msg.author)}')
+    perm = msg.channel.permissions_for(msg.author)
+    await bot.say(f'{perm.value}')
 
 
 async def _immaculater_response(user_uid=None, commands=None):
