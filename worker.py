@@ -55,6 +55,12 @@ async def open():
     await bot.say(f'{_immaculater_url()}/todo')
 
 
+@bot.command(pass_context=True)
+async def perms(ctx):
+    msg = await bot.say(f'{_immaculater_url()}/todo')
+    await bot.say(f'{msg.channel.permissions_for(msg.author)}')
+
+
 async def _immaculater_response(user_uid=None, commands=None):
     assert _immaculater_url().startswith('https://')  # let's keep our secrets
     result = []
