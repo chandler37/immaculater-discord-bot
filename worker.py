@@ -2,6 +2,7 @@ import asyncio
 import aiohttp
 import json
 import os
+import shlex
 
 from discord.ext import commands
 import discord
@@ -40,8 +41,9 @@ async def sh(ctx, *args):
     tmp = await bot.say(
         'Waking %s from sleep... wishing we used Heroku hobby dynos...'
         % _immaculater_name())
-    iresponse = await _immaculater_response(user_uid=ctx.message.author.id,
-                                            commands=' '.join(args))
+    iresponse = await _immaculater_response(
+        user_uid=ctx.message.author.id,
+        commands=' '.join(shlex.quote(a) for a in args))
     backticks = "```"
     while backticks in iresponse:
         iresponse = iresponse.replace("```", "`\\`")
