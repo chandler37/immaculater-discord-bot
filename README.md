@@ -1,7 +1,7 @@
 # immaculater-discord-bot
 Discord bot that talks to Immaculater's django server
 
-![Screenshot](pictures/Screen Shot.png)
+![Screenshot](pictures/Screenshot.png)
 
 
 Immaculater is https://github.com/chandler37/immaculater
