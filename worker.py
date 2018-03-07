@@ -12,31 +12,37 @@ def _immaculater_url():
     return 'https://%s' % os.environ["IMMACULATER_URL"]
 
 
+def _command_prefix():
+    return os.environ.get("DISCORD_COMMAND_PREFIX", "?")
+
+
 description = f"""A Discord bot for {_immaculater_url()}
 
 Immaculater source code: https://github.com/chandler37/immaculater
 
 This bot's source code: https://github.com/chandler37/immaculater-discord-bot
 
-'!help' shows this message but you really want '!! help' to see help for
+'{_command_prefix()}help' shows this message but you really want '{_command_prefix()}{_command_prefix()} help' to see help for
 Immaculater's command-line interface.
 
-!! help
-!! do find a cool job
-!! cd /inbox && complete 'find a cool job'
-!! rmact uid=37
-!! view all_even_deleted && ls -R /
+{_command_prefix()}{_command_prefix()} help
+{_command_prefix()}{_command_prefix()} do find a cool job
+{_command_prefix()}{_command_prefix()} maybe advance the field of Computer Science
+{_command_prefix()}{_command_prefix()} todo
+{_command_prefix()}{_command_prefix()} cd /inbox && complete 'find a cool job'
+{_command_prefix()}{_command_prefix()} view all_even_deleted && ls -R /
+{_command_prefix()}{_command_prefix()} rmact uid=37
 """
 
 
 class RoboImmaculater(commands.Bot):
     def __init__(self):
-        super().__init__(commands.when_mentioned_or(os.environ.get("DISCORD_COMMAND_PREFIX", "!")),
+        super().__init__(commands.when_mentioned_or(_command_prefix()),
                          description=description, pm_help=None)
 
 bot = RoboImmaculater()
 
-@bot.command(name="!", pass_context=True)
+@bot.command(name=_command_prefix(), pass_context=True)
 async def sh(ctx, *args):
     tmp = await bot.say(
         'Waking %s from sleep... wishing we used Heroku hobby dynos...'
