@@ -22,6 +22,6 @@ https://discordapp.com/api/oauth2/authorize?client_id=ClientID&scope=bot&permiss
 
 Select your server in the drop-down.
 
-Speak to your new bot using '!help' and '!! help' and '!! do buy soymilk' and
-'!! todo' and so forth. Use the website (see '!open') to do an initial login
+Speak to your new bot using '?help' and '?? help' and '?? do buy soymilk' and
+'?? todo' and so forth. Use the website (see '?open') to do an initial login
 with Discord (using the allauth0 branch of https://github.com/chandler37/immaculater).
