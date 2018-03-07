@@ -27,6 +27,8 @@ Immaculater's command-line interface.
 
 {_command_prefix()}{_command_prefix()} help
 {_command_prefix()}{_command_prefix()} do find a cool job
+{_command_prefix()}{_command_prefix()} maybe advance the field of Computer Science
+{_command_prefix()}{_command_prefix()} todo
 {_command_prefix()}{_command_prefix()} cd /inbox && complete 'find a cool job'
 {_command_prefix()}{_command_prefix()} view all_even_deleted && ls -R /
 {_command_prefix()}{_command_prefix()} rmact uid=37
