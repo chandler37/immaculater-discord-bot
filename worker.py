@@ -18,9 +18,16 @@ def _command_prefix():
 
 description = f"""A Discord bot for {_immaculater_url()}
 
+Before first using this bot, visit the above site and create an Immaculater
+account by signing in with your Discord account.
+
 Immaculater source code: https://github.com/chandler37/immaculater
 
 This bot's source code: https://github.com/chandler37/immaculater-discord-bot
+
+Standalone command-line interface: https://github.com/chandler37/immaculater-cli
+
+In-browser command-line interface: {_immaculater_url()}/todo/cli
 
 '{_command_prefix()}help' shows this message but you really want '{_command_prefix()}{_command_prefix()} help' to see help for
 Immaculater's command-line interface.
