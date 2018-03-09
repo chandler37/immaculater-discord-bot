@@ -49,6 +49,38 @@ class RoboImmaculater(commands.Bot):
 
 bot = RoboImmaculater()
 
+
+def _parse_command_list(args):
+    if not args:
+        return []
+    commands = []
+    current_command = []
+    def end_command():
+        commands.append(' '.join(shlex.quote(arg) for arg in current_command))
+        del current_command[:]
+    for arg in args:
+        if arg == "&&":
+            end_command()
+        else:
+            current_command.append(arg)
+    end_command()
+    return commands
+
+
+def test_parse_command_list():
+    def assert_equal(left, right):
+        assert left == right, 'left=%s right=%s' % (left, right)
+    assert_equal(_parse_command_list([]), [])
+    assert_equal(_parse_command_list(["x"]), ["x"])
+    assert_equal(_parse_command_list(["x y"]), [shlex.quote("x y")])
+    assert_equal(_parse_command_list(["x y", "&&"]), [shlex.quote("x y"), ""])
+    assert_equal(_parse_command_list(["x y", "&&", "y", "z"]), [shlex.quote("x y"), "y z"])
+    assert_equal(_parse_command_list(["&&"]), ["", ""])
+
+
+test_parse_command_list()
+
+
 @bot.command(name=_command_prefix(), pass_context=True)
 async def sh(ctx, *args):
     tmp = await bot.say(
@@ -56,7 +88,7 @@ async def sh(ctx, *args):
         % _immaculater_name())
     iresponse = await _immaculater_response(
         user_uid=ctx.message.author.id,
-        commands=' '.join(shlex.quote(a) for a in args))
+        commands=_parse_command_list(args))
     backticks = "```"
     while backticks in iresponse:
         iresponse = iresponse.replace("```", "`\\`")
@@ -79,14 +111,16 @@ async def perms(ctx):
 
 async def _immaculater_response(user_uid=None, commands=None):
     assert _immaculater_url().startswith('https://')  # let's keep our secrets
+    commands = [] if commands is None else commands
+    if not commands:
+        commands = ['help']
     result = []
-    list_of_commands = commands.strip().split('&&') if commands.strip() else ["help"]
     headers = {'Content-type': 'application/json'}
     auth = aiohttp.helpers.BasicAuth(login=str(bot.user.id),
                                      password=os.environ["IMMACULATER_BOT_SECRET"])
     async with aiohttp.ClientSession(auth=auth, headers=headers) as session:
         async with session.post(_immaculater_url() + "/todo/discordapi",
-                                data=json.dumps({'commands': list_of_commands,
+                                data=json.dumps({'commands': commands,
                                                  'discord_user': user_uid,
                                                  'read_only': False})) as r:
             if r.status == 200:
